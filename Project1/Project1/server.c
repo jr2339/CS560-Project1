@@ -1,13 +1,5 @@
-//
-//  server.c
-//  Project1
-//
-//  Created by jr2339 on 9/18/16.
-//  Copyright © 2016 jr2339. All rights reserved.
-//
-
 #include "server.h"
-
+#include <pthread.h>
 
 /*
  * main()
@@ -47,8 +39,16 @@ int main(int argc, char** argv) {
         if ((client_socket = accept(server_socket, NULL, NULL)) == -1) {
             perror("Error accepting client");
         } else {
-            printf("\nAccepted client\n");
-            handle_client(client_socket);
+            //create thread here and send thread to handle_client function
+            pthread_t thread;
+            if(pthread_create(&thread,NULL,handle_client,(void*)&client_socket)!=0){ // we can omit !=0
+                printf("Error: There was an error creating thread.\n");
+                exit(-1);
+            }
+            if (pthread_detach(thread)) {
+                printf("Error: There was an error detaching thread.");
+                exit(EXIT_FAILURE);
+            }
         }
     }
 }
@@ -57,8 +57,9 @@ int main(int argc, char** argv) {
 /*
  * handle client
  */
-void handle_client(int client_socket) {
+void* handle_client(void* client_sock) {
     char input;
+    int client_socket = (int) client_sock;
     int keep_going = TRUE;
     
     while (keep_going) {
@@ -91,4 +92,39 @@ void handle_client(int client_socket) {
     } else {
         printf("\nClosed socket to client, exit");
     }
+    return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

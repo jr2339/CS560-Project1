@@ -13,7 +13,7 @@
 #include <netinet/in.h>
 
 /* Function prototypes */
-void handle_client(int client_socket);
+void* handle_client(void* client_sock);
 
 /* Preprocessor directives */
 #define SERVER_ADDR "127.0.0.1" // for client
