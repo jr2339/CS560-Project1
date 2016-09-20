@@ -4,6 +4,7 @@
 /*
  * main()
  */
+pthread_mutex_t lock;
 int main(int argc, char** argv) {
     int server_socket;                 // descriptor of server socket
     struct sockaddr_in server_address; // for naming the server's listening socket
@@ -34,7 +35,7 @@ int main(int argc, char** argv) {
     
     // server loop
     while (TRUE) {
-        
+        pthread_mutex_lock(&lock); // lock all other threads out
         // accept connection to client
         if ((client_socket = accept(server_socket, NULL, NULL)) == -1) {
             perror("Error accepting client");
@@ -60,6 +61,7 @@ int main(int argc, char** argv) {
 void* handle_client(void* client_sock) {
     char input;
     int client_socket = (int) client_sock;
+    pthread_mutex_unlock(&lock); // unlock the mutex or the next thread
     int keep_going = TRUE;
     
     while (keep_going) {
